@@ -4,28 +4,42 @@
 
 ATLAS will provide a self-hosted reliability control plane that observes deployments, correlates operational evidence, diagnoses incidents, and supports human-approved recovery. It is not intended to compete with general-purpose application hosting platforms. The initial design is a modular monolith with independently running background workers.
 
-## Initial Architecture
+## High-Level Architecture
 
 The FastAPI backend coordinates authenticated requests, domain workflows, evidence ingestion, incident analysis, persistence, job scheduling, recovery approvals, and audit records. PostgreSQL stores durable application, deployment, incident, and operational data. Redis carries background jobs and transient coordination state. Workers execute builds, deployment observations, telemetry processing, and incident-analysis tasks independently of request handling.
 
+Detailed component responsibilities and boundaries are documented in [components.md](components.md).
+
 ```mermaid
-flowchart LR
-    Developer --> Frontend[React Frontend]
-    Frontend --> Backend[FastAPI Backend]
+flowchart TD
+
+    Applications[Monitored Applications] --> OpenTelemetry[OpenTelemetry]
+    OpenTelemetry --> Pipeline[Telemetry Pipeline]
+
+    Pipeline --> Loki[Logs: Loki]
+    Pipeline --> Prometheus[Metrics: Prometheus]
+    Pipeline --> Traces[Traces: OpenTelemetry]
+    Pipeline --> Backend[ATLAS Backend: FastAPI]
+    Dashboard[React Dashboard] --> Backend
+
+    Loki --> Backend
+    Prometheus --> Backend
+    Traces --> Backend
+
+    Backend --> IncidentDetection[Incident Detection]
     Backend --> PostgreSQL[(PostgreSQL)]
-    Backend --> Redis[(Redis Job Queue)]
-    Redis --> BuildWorker[Build Worker]
-    Redis --> DeployWorker[Deployment Worker]
-    Redis --> IncidentWorker[Incident Analysis Worker]
-    DeployWorker --> Docker[Docker Engine]
-    Docker --> Containers[Application Containers]
-    Containers --> Signals[Metrics Logs and Traces]
-    Signals --> Observability[Observability Systems]
-    Observability --> IncidentWorker
-    BuildWorker --> IncidentWorker
-    DeployWorker --> IncidentWorker
-    IncidentWorker --> Incidents[Incidents and Evidence]
-    Incidents --> Dashboard[Dashboard]
+    Backend --> Redis[Redis / RQ]
+    Redis --> Correlation[Correlation Engine]
+    IncidentDetection --> Correlation
+    Correlation --> Diagnosis[Diagnosis Engine]
+    Diagnosis --> Recommendations[Recovery Recommendations]
+    Recommendations --> Approval{Human Approval}
+
+    Approval -->|Approved| RecoveryWorker[Recovery Worker]
+    Approval -->|Rejected| Decision[Record Decision]
+    RecoveryWorker --> Recovery[Application Recovery]
+    Recovery --> Health[Health Verification]
+    Health --> Backend
 ```
 
 ## Responsibilities and Boundaries

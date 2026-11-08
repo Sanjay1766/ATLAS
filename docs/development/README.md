@@ -6,13 +6,24 @@ Build ATLAS in small, verifiable increments. Prefer clear module boundaries, exp
 
 ## Engineering Standards
 
-- Use clean, modular code with explicit separation of responsibilities.
+ATLAS development follows these project-wide principles:
+
+1. **Python code must be modular and testable.** Modules should have clear responsibilities, explicit interfaces, and limited coupling.
+2. **Every major feature must have automated tests.** Tests should cover expected behavior, important failure paths, and relevant integration boundaries.
+3. **APIs must be versioned.** Public API changes must use an intentional compatibility and migration strategy rather than silently breaking existing clients.
+4. **Errors must be logged with useful context.** Logs should include sufficient structured context to support diagnosis without exposing secrets or sensitive data.
+5. **Secrets must never be committed to Git.** Credentials, tokens, private keys, and environment-specific secrets must be supplied through secure configuration mechanisms.
+6. **Recovery operations must be auditable.** Recommendations, approvals, executions, outcomes, and acting identities must be recorded for later review.
+7. **AI must provide evidence for its recommendations.** Diagnostic conclusions and recovery suggestions must reference the signals, events, and uncertainty that support them.
+8. **Destructive operations require human approval.** The system must not execute consequential recovery actions autonomously by default.
+9. **Documentation must evolve alongside implementation.** Public interfaces, architecture, operational behavior, security assumptions, and decisions must be updated with the code they describe.
+
+Additional standards:
+
 - Use Python type hints and validate API inputs.
 - Manage database changes through migrations.
-- Add automated tests for behavior and important failure paths.
 - Use structured logging and secure configuration management.
-- Keep secrets in environment-backed configuration.
-- Maintain meaningful documentation and reproducible development environments.
+- Maintain reproducible development environments.
 - Avoid unnecessary dependencies, abstractions, and premature microservices.
 
 ## Testing Expectations
