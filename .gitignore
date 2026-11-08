@@ -1,0 +1,28 @@
+# Operating system
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# JavaScript and TypeScript
+node_modules/
+dist/
+build/
+coverage/
+
+# Logs
+*.log
