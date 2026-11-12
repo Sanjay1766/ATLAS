@@ -79,6 +79,8 @@ Application, worker, package, and infrastructure directories will be added in la
 
 **Initialization only.** The repository currently contains project documentation and repository conventions. No frontend, backend, worker, database, deployment, monitoring, or AI feature is implemented.
 
+.
+
 ## Contribution Philosophy
 
 ATLAS is a solo-developed project during its initial six-month phase. Future contributions should be focused, technically justified, documented, tested, and consistent with the project architecture. New dependencies and abstractions should address a demonstrated need rather than anticipated complexity.
